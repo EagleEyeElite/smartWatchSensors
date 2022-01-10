@@ -3,15 +3,8 @@ import sqlite3
 import matplotlib.pyplot as plt
 import matplotlib.dates as md
 
-
-timeWindow = [datetime.datetime(2022, 1, 2, 6), datetime.datetime(2022, 1, 2, 18)]
-
-
-conn = sqlite3.connect(r"sensorData/Gadgetbridge")
-cur = conn.cursor()
-cur.execute("SELECT * FROM MI_BAND_ACTIVITY_SAMPLE")
-rows = cur.fetchall()
-
+# timeWindow = [datetime.datetime(2022, 1, 2, 6), datetime.datetime(2022, 1, 2, 18)]
+timeWindow = [datetime.datetime(2022, 1, 11, 14), datetime.datetime(2022, 1, 12, 18)]
 
 
 class MiBandDataPoint:
@@ -34,45 +27,50 @@ class MiBandDataPoint:
             format(time=self.time, rInt=self.rawIntensity, steps=self.steps, rawKind=self.rawKind, hr=self.heartRate)
 
 
-datapoints = []
-
-steps = 0
-for row in rows:
-    if not (timeWindow[0] < datetime.datetime.utcfromtimestamp(row[0]) < timeWindow[1]):
-        continue
-    steps += row[4]
-    data = MiBandDataPoint(row[0], row[3], steps, row[5], row[6])
-    datapoints.append(data)
-
-
-plt.title("Mi Band")
-plt.xlabel("Zeit")
-plt.ylabel("Stand [%]")
-plt.xlim([timeWindow[0], timeWindow[1]])
-x = []
-rawKind = []
-steps = []
-heartRate = []
-rawIntensity = []
-for point in datapoints:
-    x.append(point.time)
-    rawKind.append(point.rawKind)
-    steps.append(point.steps)
-    heartRate.append(point.heartRate)
-    rawIntensity.append(point.rawIntensity)
+def query_database():
+    conn = sqlite3.connect(r"database/Gadgetbridge")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM MI_BAND_ACTIVITY_SAMPLE")
+    rows = cur.fetchall()
+    conn.close()
+    datapoints = []
+    steps = 0
+    for row in rows:
+        if not (timeWindow[0] < datetime.datetime.utcfromtimestamp(row[0]) < timeWindow[1]):
+            continue
+        steps += row[4]
+        data = MiBandDataPoint(row[0], row[3], steps, row[5], row[6])
+        datapoints.append(data)
+    return datapoints
 
 
-fig, ax1 = plt.subplots()
-fig.suptitle('Mi Band - anderer Ski Tag')
-ax2 = ax1.twinx()
-ax1.plot(x, rawKind, label="rawKind")
-ax2.plot(x, steps, label="steps", color="brown")
-ax1.plot(x, heartRate, 'x', label="heartRate")
-ax1.plot(x, rawIntensity, label="rawIntensity")
-plt.xticks(rotation=45)
-xfmt = md.DateFormatter('%d - %H:%M')
-plt.gca().xaxis.set_major_formatter(xfmt)
-fig.legend()
-
-plt.savefig("Mi Band anderer Tag Skilift.pdf")
-plt.show()
+if __name__ == '__main__':
+    datapoints = query_database()
+    x = []
+    rawKind = []
+    steps = []
+    heartRate = []
+    rawIntensity = []
+    for point in datapoints:
+        x.append(point.time)
+        rawKind.append(point.rawKind)
+        steps.append(point.steps)
+        heartRate.append(point.heartRate)
+        rawIntensity.append(point.rawIntensity)
+    fig, ax1 = plt.subplots()
+    plt.title("Mi Band")
+    plt.xlabel("Zeit")
+    plt.ylabel("Stand [%]")
+    #plt.xlim([timeWindow[0], timeWindow[1]])
+    fig.suptitle('Mi Band - anderer Ski Tag')
+    ax2 = ax1.twinx()
+    ax1.plot(x, rawKind, label="rawKind")
+    ax2.plot(x, steps, label="steps", color="brown")
+    ax1.plot(x, heartRate, '.-', label="heartRate")
+    ax1.plot(x, rawIntensity, label="rawIntensity")
+    plt.xticks(rotation=45)
+    xfmt = md.DateFormatter('%d - %H:%M')
+    plt.gca().xaxis.set_major_formatter(xfmt)
+    fig.legend()
+    #plt.savefig("Mi Band anderer Tag Skilift.pdf")
+    plt.show()
