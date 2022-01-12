@@ -1,76 +1,78 @@
 import datetime
 import sqlite3
 import matplotlib.pyplot as plt
-import matplotlib.dates as md
-
-# timeWindow = [datetime.datetime(2022, 1, 2, 6), datetime.datetime(2022, 1, 2, 18)]
-timeWindow = [datetime.datetime(2022, 1, 11, 14), datetime.datetime(2022, 1, 12, 18)]
 
 
-class MiBandDataPoint:
-    def __init__(self, time, raw_intensity, steps, raw_kind, heart_rate):
-        if heart_rate == 0 or heart_rate == 255:
-            heart_rate = None
-        self.time = datetime.datetime.utcfromtimestamp(time)
-        self.rawIntensity = raw_intensity
-        self.steps = steps
-        self.rawKind = raw_kind
-        self.heartRate = heart_rate
-
-    def __str__(self):
-        return \
-            "Timestamp: {time}, " \
-            "raw intensity: {rInt}, " \
-            "steps: {steps}, " \
-            "raw kind: {rawKind}, " \
-            "heart rate: {hr}". \
-            format(time=self.time, rInt=self.rawIntensity, steps=self.steps, rawKind=self.rawKind, hr=self.heartRate)
+def quick_and_dirty(timestamps):
+    for idx, row in enumerate(timestamps):
+        hm = list(row)
+        hm[0] = datetime.datetime.utcfromtimestamp(hm[0]) + datetime.timedelta(hours=1)
+        timestamps[idx] = hm
+    return timestamps
 
 
-def query_database():
-    conn = sqlite3.connect(r"database/Gadgetbridge")
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM MI_BAND_ACTIVITY_SAMPLE")
-    rows = cur.fetchall()
-    conn.close()
-    datapoints = []
-    steps = 0
-    for row in rows:
-        if not (timeWindow[0] < datetime.datetime.utcfromtimestamp(row[0]) < timeWindow[1]):
-            continue
-        steps += row[4]
-        data = MiBandDataPoint(row[0], row[3], steps, row[5], row[6])
-        datapoints.append(data)
-    return datapoints
+def query_database(table: str, column: str, time_window):
+    time_window[0] = time_window[0]
+    time_window[1] = time_window[1]
+    con = sqlite3.connect(r"database/Gadgetbridge")
+    cur = con.cursor()
+    cur.execute("SELECT TIMESTAMP as T, %s "
+                "FROM %s "
+                "WHERE T BETWEEN ? AND ? "
+                "ORDER BY T ASC" % (column, table),
+                (time_window[0].timestamp(), time_window[1].timestamp()))
+    rows = quick_and_dirty(cur.fetchall())
+    con.close()
+    return rows
 
 
-if __name__ == '__main__':
-    datapoints = query_database()
-    x = []
-    rawKind = []
+def plot_steps(plot: plt, time_window):
+    data = query_database("MI_BAND_ACTIVITY_SAMPLE", "STEPS", time_window)
+    t = []
     steps = []
-    heartRate = []
-    rawIntensity = []
-    for point in datapoints:
-        x.append(point.time)
-        rawKind.append(point.rawKind)
-        steps.append(point.steps)
-        heartRate.append(point.heartRate)
-        rawIntensity.append(point.rawIntensity)
-    fig, ax1 = plt.subplots()
-    plt.title("Mi Band")
-    plt.xlabel("Zeit")
-    plt.ylabel("Stand [%]")
-    #plt.xlim([timeWindow[0], timeWindow[1]])
-    fig.suptitle('Mi Band - anderer Ski Tag')
-    ax2 = ax1.twinx()
-    ax1.plot(x, rawKind, label="rawKind")
-    ax2.plot(x, steps, label="steps", color="brown")
-    ax1.plot(x, heartRate, '.-', label="heartRate")
-    ax1.plot(x, rawIntensity, label="rawIntensity")
-    plt.xticks(rotation=45)
-    xfmt = md.DateFormatter('%d - %H:%M')
-    plt.gca().xaxis.set_major_formatter(xfmt)
-    fig.legend()
-    #plt.savefig("Mi Band anderer Tag Skilift.pdf")
-    plt.show()
+    steps_so_far = 0
+    for point in data:
+        steps_so_far += point[1]
+        t.append(point[0])
+        steps.append(steps_so_far)
+    plot.plot(t, steps, label="Mi Band steps", color="brown")
+
+
+def plot_raw_kind(plot: plt, time_window):
+    data = query_database("MI_BAND_ACTIVITY_SAMPLE", "RAW_KIND", time_window)
+    t = []
+    raw_kind = []
+    for point in data:
+        t.append(point[0])
+        raw_kind.append(point[1])
+    plot.plot(t, raw_kind, label="rawKind")
+
+
+def plot_pulse(plot: plt, time_window):
+    data = query_database("MI_BAND_ACTIVITY_SAMPLE", "HEART_RATE", time_window)
+    t = []
+    pulse = []
+    for point in data:
+        t.append(point[0])
+        pulse.append(point[1])
+    plot.plot(t, pulse, '.-', label="Mi Band Pulse")
+
+
+def plot_raw_intensity(plot: plt, time_window):
+    data = query_database("MI_BAND_ACTIVITY_SAMPLE", "RAW_INTENSITY", time_window)
+    t = []
+    raw_intensity = []
+    for point in data:
+        t.append(point[0])
+        raw_intensity.append(point[1])
+    plot.plot(t, raw_intensity, '.-', label="Mi Band raw Intensity")
+
+
+def plot_battery(plot: plt, time_window):
+    data = query_database("BATTERY_LEVEL", "LEVEL", time_window)
+    t = []
+    battery = []
+    for point in data:
+        t.append(point[0])
+        battery.append(point[1])
+    plot.plot(t, battery, '.-', label="Mi Band Battery")
