@@ -25,9 +25,17 @@ def plot_steps(plot: plt, time_window):
     init_steps = rows[0][1]
     time: List[datetime] = []
     steps: List[int] = []
+    prev_steps = 0
+    prev_add = 0
     for i in rows:
+        current_steps = i[1] - init_steps + prev_add
+        if prev_steps > current_steps:
+            prev_add += prev_steps
+            init_steps = i[1]
+            current_steps += prev_steps
+        prev_steps = current_steps
         time.append(datetime.datetime.fromtimestamp(i[0]))
-        steps.append(i[1] - init_steps)
+        steps.append(current_steps)
     plot.plot(time, steps, '.-', label='Schritte')
 
 
