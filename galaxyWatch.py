@@ -46,15 +46,14 @@ def plot_pulse(plot: plt, time_window):
     time_outliers: List[datetime] = []
     pulse_outliers: List[int] = []
     for idx, val in enumerate(pulse_data):
-        if val[1] == 0 or (
-                np.abs(pulse_data[idx - 1][1] - pulse_data[idx][1]) > 30):
-            time_outliers.append(datetime.datetime.fromtimestamp(pulse_data[idx][0]))
-            pulse_outliers.append(pulse_data[idx][1])
+        if val[1] == 0 or np.abs(pulse_data[idx - 1][1] - pulse_data[idx][1]) > 30:
+            time_outliers.append(datetime.datetime.fromtimestamp(val[0]))
+            pulse_outliers.append(val[1])
         else:
             time.append(datetime.datetime.fromtimestamp(val[0]))
             pulse.append(val[1])
+    plot.plot(time_outliers, pulse_outliers, '.', label='Galaxy PulseOutliers')
     plot.plot(time, pulse, label='Galaxy Puls')
-    plot.plot(time_outliers, pulse_outliers, 'x', label='Galaxy PulseOutliers')
 
 
 def plot_acceleration(plot: plt, time_window):
@@ -65,7 +64,7 @@ def plot_acceleration(plot: plt, time_window):
         time.append(datetime.datetime.fromtimestamp(i[0]))
         total = np.linalg.norm([i[1], i[2], i[3]], axis=0)
         acc.append([i[1], i[2], i[3], total])
-    plot.plot(time, acc, '.-', label='Acceleration')
+    plot.plot(time, acc, '.-', label='Acceleration', alpha=1)
 
 
 def plot_data(sensor: str, plot: plt, time_window):

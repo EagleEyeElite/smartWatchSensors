@@ -13,7 +13,7 @@ def plot_data(time_window, title):
     plt.rcParams['lines.linewidth'] = 1
     fig, axes = plt.subplots(3, 2, sharex=True, gridspec_kw={'hspace': 0, 'wspace': 0.02})
     fig.autofmt_xdate(rotation=45)
-    xfmt = md.DateFormatter('%d - %H:%M')
+    xfmt = md.DateFormatter('%d.%m - %H:%M')
     plt.gca().xaxis.set_major_formatter(xfmt)
 
     fig.suptitle(title)
@@ -25,7 +25,7 @@ def plot_data(time_window, title):
     axes[0, 0].legend()
 
     Galaxy.plot_data('airpressure', axes[1, 0], time_window)
-    axes[1, 0].set(ylim=(850, 1100), ylabel="Luftdruck [mbar]")
+    axes[1, 0].set(ylabel="Luftdruck [mbar]")
     axes[1, 0].legend()
 
     Galaxy.plot_acceleration(axes[2, 0], time_window)
@@ -59,8 +59,23 @@ def plot_data(time_window, title):
 
 # plot data for selected time window
 if __name__ == '__main__':
-    #plot_data([datetime.datetime(2022, 1, 1, 7, 30), datetime.datetime(2022, 1, 1, 10)], "Ski day: galaxy watch")
-    #plot_data([datetime.datetime(2022, 1, 2, 7, 30), datetime.datetime(2022, 1, 2, 20)], "Ski day: mi band")
+    plot_data([datetime.datetime(2022, 1, 1, 7, 30), datetime.datetime(2022, 1, 1, 10)], "Ski day: galaxy watch")
+    plot_data([datetime.datetime(2022, 1, 2, 7, 30), datetime.datetime(2022, 1, 2, 20)], "Ski day: mi band")
+    plot_data([datetime.datetime(2022, 1, 12, 9), datetime.datetime(2022, 1, 19)], "1 Woche Trage test")
+    plot_data([datetime.datetime(2022, 1, 13, 8), datetime.datetime(2022, 1, 14)], "Höhenunterschied: -1 Stockwert bis 4. Stockwerk")
+    plot_data([datetime.datetime(2022, 1, 15, 14, 15), datetime.datetime(2022, 1, 15, 16, 45)], "Mi Band Pulse Schwäche")
+    plot_data([datetime.datetime(2022, 1, 16, 12), datetime.datetime(2022, 1, 16, 21)],"Mi Band Pulse Schwäche 2")
+    plot_data([datetime.datetime(2022, 1, 17), datetime.datetime(2022, 1, 17, 12)], "Galaxy Watch Pulse Schwäche über Nacht")
 
-    plot_data([datetime.datetime(2022, 1, 12, 9), datetime.datetime(2022, 1, 18)], "1 Woche Trage test")
-    plot_data([datetime.datetime(2022, 1, 17, 9), datetime.datetime(2022, 1, 18)], "Workout")
+    plot_data([datetime.datetime(2022, 1, 14, 22), datetime.datetime(2022, 1, 15, 12)], "Galaxy Watch hat über Nacht nichs aufgezeichnet")
+
+    # Workout am 17.01.:
+    #  Joggen von 10:00 bis 11:00 Uhr
+    #  Dehnübungen und Treppensteigen direkt danach
+    # Von 11 bis 12: Fahrrad fahren. Uhr hat nicht aufgezeichnet, obwohl Puls hoch, warum? :/
+    plot_data([datetime.datetime(2022, 1, 17, 9), datetime.datetime(2022, 1, 17, 13, 30)], "Workout")
+
+
+    # Batterie erkentnisse:
+    # Galaxy hält max. 1 Tag aus
+    # Mi Band hält bis zu
