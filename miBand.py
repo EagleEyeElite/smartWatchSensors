@@ -53,7 +53,7 @@ def plot_pulse(plot: plt, time_window):
     t = []
     pulse = []
     for point in data:
-        if point[1] == 255:
+        if point[1] == 255 or point[1] == -1:
             continue
         t.append(point[0])
         pulse.append(point[1])
@@ -65,6 +65,8 @@ def plot_raw_intensity(plot: plt, time_window):
     t = []
     raw_intensity = []
     for point in data:
+        if point[1] == -1:
+            continue
         t.append(point[0])
         raw_intensity.append(point[1])
     plot.plot(t, raw_intensity, '.-', label="Mi Band raw Intensity")

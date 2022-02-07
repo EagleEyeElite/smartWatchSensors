@@ -53,29 +53,17 @@ def plot_data(time_window, title):
     axes[2, 1].yaxis.tick_right()
     axes[2, 1].legend()
 
-    # plt.savefig("Galaxy Sensoren Skilift.pdf")
-    plt.show()
+    fig.set_size_inches(22, 10)
+    plt.savefig(title, dpi=200, bbox_inches='tight')
+    #plt.show()
 
 
 # plot data for selected time window
 if __name__ == '__main__':
-    plot_data([datetime.datetime(2022, 1, 1, 7, 30), datetime.datetime(2022, 1, 1, 10)], "Ski day: galaxy watch")
-    plot_data([datetime.datetime(2022, 1, 2, 7, 30), datetime.datetime(2022, 1, 2, 20)], "Ski day: mi band")
-    plot_data([datetime.datetime(2022, 1, 12, 9), datetime.datetime(2022, 1, 19)], "1 Woche Trage test")
-    plot_data([datetime.datetime(2022, 1, 13, 8), datetime.datetime(2022, 1, 14)], "Höhenunterschied: -1 Stockwert bis 4. Stockwerk")
-    plot_data([datetime.datetime(2022, 1, 15, 14, 15), datetime.datetime(2022, 1, 15, 16, 45)], "Mi Band Pulse Schwäche")
-    plot_data([datetime.datetime(2022, 1, 16, 12), datetime.datetime(2022, 1, 16, 21)],"Mi Band Pulse Schwäche 2")
-    plot_data([datetime.datetime(2022, 1, 17), datetime.datetime(2022, 1, 17, 12)], "Galaxy Watch Pulse Schwäche über Nacht")
-
-    plot_data([datetime.datetime(2022, 1, 14, 22), datetime.datetime(2022, 1, 15, 12)], "Galaxy Watch hat über Nacht nichs aufgezeichnet")
-
-    # Workout am 17.01.:
-    #  Joggen von 10:00 bis 11:00 Uhr
-    #  Dehnübungen und Treppensteigen direkt danach
-    # Von 11 bis 12: Fahrrad fahren. Uhr hat nicht aufgezeichnet, obwohl Puls hoch, warum? :/
-    plot_data([datetime.datetime(2022, 1, 17, 9), datetime.datetime(2022, 1, 17, 13, 30)], "Workout")
-
-
-    # Batterie erkentnisse:
-    # Galaxy hält max. 1 Tag aus
-    # Mi Band hält bis zu
+    # plot_data([datetime.datetime(2022, 1, 25), datetime.datetime(2022, 2, 7)], "Michael alles")
+    # plot_data([datetime.datetime(2022, 1, 28, 9), datetime.datetime(2022, 1, 29)], "Michael")
+    # plot_data([datetime.datetime(2022, 1, 31, 8, 30), datetime.datetime(2022, 1, 31, 17)], "Michael")
+    plot_data([datetime.datetime(2022, 2, 1, 8), datetime.datetime(2022, 2, 1, 20)], "Michael Garmisch Parten Kirchen 1")
+    plot_data([datetime.datetime(2022, 2, 4, 14), datetime.datetime(2022, 2, 4, 18)], "Michael Garmisch Parten Kirchen 2")
+    plot_data([datetime.datetime(2022, 2, 5, 13), datetime.datetime(2022, 2, 5, 18)], "Michael Garmisch Parten Kirchen 3")
+    plot_data([datetime.datetime(2022, 2, 6, 10), datetime.datetime(2022, 2, 6, 15)], "Michael Garmisch Parten Kirchen 4")
