@@ -7,7 +7,7 @@ import miBand as Band
 
 def plot_data(time_window, title):
     # Plot Styles
-    plt.style.use('seaborn')
+    plt.style.use('seaborn-v0_8')
     plt.rcParams['axes.linewidth'] = 1
     plt.rcParams['axes.edgecolor'] = 'gray'
     plt.rcParams['lines.linewidth'] = 1
